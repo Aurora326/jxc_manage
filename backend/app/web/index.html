@@ -1,0 +1,212 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JXC Manage</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">JX</div>
+          <div>
+            <div class="brand-title">JXC Manage</div>
+            <div class="brand-sub">进销存系统</div>
+          </div>
+        </div>
+        <nav class="menu">
+          <button class="menu-item active" data-view="dashboard">概览</button>
+          <button class="menu-item" data-view="products">商品管理</button>
+          <button class="menu-item" data-view="warehouses">仓库管理</button>
+          <button class="menu-item" data-view="partners">客户/供应商</button>
+          <button class="menu-item" data-view="docs">单据中心</button>
+          <button class="menu-item" data-view="sns">SN 查询</button>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="muted">单机版 · SQLite</div>
+        </div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div>
+            <div class="page-title" id="pageTitle">概览</div>
+            <div class="page-sub">统一入口，库存变动以过账为准</div>
+          </div>
+          <div class="topbar-actions">
+            <div class="user-chip" id="userChip">未登录</div>
+            <button class="btn ghost" id="logoutBtn">退出</button>
+          </div>
+        </header>
+
+        <section id="view-dashboard" class="view active">
+          <div class="grid">
+            <div class="card reveal">
+              <div class="card-head">系统状态</div>
+              <div class="stat">
+                <div class="stat-value" id="statStatus">准备就绪</div>
+                <div class="stat-label">后端服务</div>
+              </div>
+              <div class="muted">请先登录以加载业务数据</div>
+            </div>
+            <div class="card reveal">
+              <div class="card-head">商品总量</div>
+              <div class="stat">
+                <div class="stat-value" id="statProducts">-</div>
+                <div class="stat-label">已维护商品</div>
+              </div>
+            </div>
+            <div class="card reveal">
+              <div class="card-head">仓库数量</div>
+              <div class="stat">
+                <div class="stat-value" id="statWarehouses">-</div>
+                <div class="stat-label">仓库</div>
+              </div>
+            </div>
+            <div class="card reveal">
+              <div class="card-head">往来单位</div>
+              <div class="stat">
+                <div class="stat-value" id="statPartners">-</div>
+                <div class="stat-label">客户/供应商</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card reveal">
+            <div class="card-head">快速入口</div>
+            <div class="quick-actions">
+              <button class="btn" data-jump="products">新增商品</button>
+              <button class="btn" data-jump="warehouses">新增仓库</button>
+              <button class="btn" data-jump="partners">新增往来单位</button>
+              <button class="btn" data-jump="docs">查看单据</button>
+              <button class="btn" data-jump="sns">SN 查询</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-auth" class="view">
+          <div class="card auth-card reveal">
+            <div class="card-head">登录</div>
+            <div class="form-grid">
+              <label>用户名</label>
+              <input id="username" type="text" placeholder="admin" />
+              <label>密码</label>
+              <input id="password" type="password" placeholder="admin123" />
+            </div>
+            <div class="form-actions">
+              <button class="btn primary" id="loginBtn">登录</button>
+              <span class="muted" id="loginMsg"></span>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-products" class="view">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input id="qProducts" placeholder="SKU / 名称 / 型号" />
+              <button class="btn" id="btnLoadProducts">查询</button>
+            </div>
+            <button class="btn primary" id="btnAddProduct">新增商品</button>
+          </div>
+          <div class="card reveal">
+            <table class="table" id="productsTable"></table>
+          </div>
+        </section>
+
+        <section id="view-warehouses" class="view">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <button class="btn" id="btnLoadWarehouses">刷新</button>
+            </div>
+            <button class="btn primary" id="btnAddWarehouse">新增仓库</button>
+          </div>
+          <div class="card reveal">
+            <table class="table" id="warehousesTable"></table>
+          </div>
+        </section>
+
+        <section id="view-partners" class="view">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <select id="partnerType">
+                <option value="">全部</option>
+                <option value="CUSTOMER">客户</option>
+                <option value="SUPPLIER">供应商</option>
+              </select>
+              <input id="qPartners" placeholder="名称" />
+              <button class="btn" id="btnLoadPartners">查询</button>
+            </div>
+            <button class="btn primary" id="btnAddPartner">新增往来单位</button>
+          </div>
+          <div class="card reveal">
+            <table class="table" id="partnersTable"></table>
+          </div>
+        </section>
+
+        <section id="view-docs" class="view">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <select id="docType">
+                <option value="">全部类型</option>
+                <option value="PURCHASE_IN">采购入库</option>
+                <option value="SALES_OUT">销售出库</option>
+                <option value="TRANSFER">调拨</option>
+              </select>
+              <select id="docStatus">
+                <option value="">全部状态</option>
+                <option value="DRAFT">草稿</option>
+                <option value="APPROVED">已审核</option>
+                <option value="POSTED">已过账</option>
+                <option value="VOID">作废</option>
+              </select>
+              <input id="qDocs" placeholder="单号" />
+              <button class="btn" id="btnLoadDocs">查询</button>
+            </div>
+            <button class="btn" disabled>新建单据（预留）</button>
+          </div>
+          <div class="card reveal">
+            <table class="table" id="docsTable"></table>
+          </div>
+        </section>
+
+        <section id="view-sns" class="view">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input id="snCode" placeholder="SN" />
+              <select id="snStatus">
+                <option value="">全部状态</option>
+                <option value="IN_STOCK">在库</option>
+                <option value="OUT_STOCK">已出库</option>
+                <option value="LOCKED">锁定</option>
+                <option value="SCRAPPED">报废</option>
+              </select>
+              <button class="btn" id="btnLoadSns">查询</button>
+            </div>
+          </div>
+          <div class="card reveal">
+            <table class="table" id="snsTable"></table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="modal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-panel">
+        <div class="modal-head">
+          <div id="modalTitle">新增</div>
+          <button class="btn ghost" id="modalClose">关闭</button>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+        <div class="modal-actions">
+          <button class="btn" id="modalCancel">取消</button>
+          <button class="btn primary" id="modalSubmit">提交</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
